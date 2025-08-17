@@ -2,23 +2,26 @@ import React from "react";
 import style from "./Register.module.css";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function Register() {
   const schema = z
     .object({
       name: z.string().min(1, "Name is Required").max(10, "Max char is 10"),
       email: z.email("Invaild email"),
-      password: z.regex(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
-        "Must include 1 captial letter at least & small letter at least & 1 spicial char & 1 num at least and min length 8"
-      ),
+      password: z
+        .string()
+        .regex(
+          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
+          "Must include 1 captial letter at least & small letter at least & 1 spicial char & 1 num at least and min length 8"
+        ),
       rePassword: z.string(),
       dateOfBirth: z
         .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/)
-        .refine((data) => {
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "invalid date")
+        .refine((date) => {
           const userDate = new Date(date);
-          const now = new date();
+          const now = new Date();
           now.setHours(0, 0, 0, 0);
 
           return userDate < now;
@@ -39,9 +42,10 @@ export default function Register() {
       dateOfBirth: "",
       gender: "",
     },
+    resolver: zodResolver(schema),
   });
 
-  let { register, handleSubmit } = form;
+  let { register, handleSubmit, formState } = form;
 
   function handleRegister(values) {
     console.log(values);
@@ -67,6 +71,13 @@ export default function Register() {
           >
             Enter Your Name
           </label>
+          {formState.errors.name ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.name.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className='relative z-0 w-full mb-5 group'>
           <input
@@ -82,6 +93,13 @@ export default function Register() {
           >
             Enter Your E-mail
           </label>
+          {formState.errors.email ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.email.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className='relative z-0 w-full mb-5 group'>
           <input
@@ -97,6 +115,13 @@ export default function Register() {
           >
             Enter Your Password
           </label>
+          {formState.errors.password ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.password.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className='relative z-0 w-full mb-5 group'>
           <input
@@ -112,6 +137,13 @@ export default function Register() {
           >
             Enter Your rePassword
           </label>
+          {formState.errors.rePassword ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.rePassword.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className='relative z-0 w-full mb-5 group'>
           <input
@@ -127,6 +159,13 @@ export default function Register() {
           >
             Enter Your Birthday
           </label>
+          {formState.errors.dateOfBirth ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.dateOfBirth.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <div className='flex gap-4'>
           <div className='flex items-center mb-4'>
@@ -136,7 +175,6 @@ export default function Register() {
               {...register("gender")}
               defaultValue='male'
               className='w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600'
-              defaultChecked
             />
             <label
               htmlFor='male'
@@ -152,7 +190,6 @@ export default function Register() {
               {...register("gender")}
               defaultValue='female'
               className='w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600'
-              defaultChecked
             />
             <label
               htmlFor='female'
@@ -161,6 +198,13 @@ export default function Register() {
               Female
             </label>
           </div>
+          {formState.errors.gender ? (
+            <p className='text-red-500 font-semibold text-center my-2'>
+              {formState.errors.gender.message}
+            </p>
+          ) : (
+            ""
+          )}
         </div>
         <button
           type='submit'
