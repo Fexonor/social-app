@@ -1,8 +1,35 @@
 import React from "react";
 import style from "./Register.module.css";
 import { useForm } from "react-hook-form";
+import z from "zod";
 
 export default function Register() {
+  const schema = z
+    .object({
+      name: z.string().min(1, "Name is Required").max(10, "Max char is 10"),
+      email: z.email("Invaild email"),
+      password: z.regex(
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
+        "Must include 1 captial letter at least & small letter at least & 1 spicial char & 1 num at least and min length 8"
+      ),
+      rePassword: z.string(),
+      dateOfBirth: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .refine((data) => {
+          const userDate = new Date(date);
+          const now = new date();
+          now.setHours(0, 0, 0, 0);
+
+          return userDate < now;
+        }, "can't be future date "),
+      gender: z.enum(["male", "female"], "gender must be on of male or female"),
+    })
+    .refine((object) => object.password === object.rePassword, {
+      error: "password and rePassword not matched !!",
+      path: ["rePassword"],
+    });
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -14,11 +41,18 @@ export default function Register() {
     },
   });
 
-  let { register } = form;
+  let { register, handleSubmit } = form;
+
+  function handleRegister(values) {
+    console.log(values);
+  }
 
   return (
     <>
-      <form className='max-w-md my-12 mx-auto'>
+      <form
+        onSubmit={handleSubmit(handleRegister)}
+        className='max-w-md my-12 mx-auto'
+      >
         <div className='relative z-0 w-full mb-5 group'>
           <input
             type='text'
@@ -26,7 +60,6 @@ export default function Register() {
             id='name'
             className='block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
             placeholder=' '
-            required
           />
           <label
             htmlFor='name'
@@ -42,7 +75,6 @@ export default function Register() {
             id='email'
             className='block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
             placeholder=' '
-            required
           />
           <label
             htmlFor='email'
@@ -58,7 +90,6 @@ export default function Register() {
             id='password'
             className='block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
             placeholder=' '
-            required
           />
           <label
             htmlFor='password'
@@ -74,7 +105,6 @@ export default function Register() {
             id='rePassword'
             className='block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
             placeholder=' '
-            required
           />
           <label
             htmlFor='rePassword'
@@ -90,7 +120,6 @@ export default function Register() {
             id='dateOfBirth'
             className='block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer'
             placeholder=' '
-            required
           />
           <label
             htmlFor='dateOfBirth'
