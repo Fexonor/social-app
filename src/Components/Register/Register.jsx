@@ -3,8 +3,12 @@ import style from "./Register.module.css";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Register() {
+  const navigate = useNavigate()
   const schema = z
     .object({
       name: z.string().min(1, "Name is Required").max(10, "Max char is 10"),
@@ -48,7 +52,14 @@ export default function Register() {
   let { register, handleSubmit, formState } = form;
 
   function handleRegister(values) {
-    console.log(values);
+    axios
+      .post("https://linked-posts.routemisr.com/users/signup", values)
+      .then((res) => {
+        navigate("/login")
+      })
+      .catch((err) => {
+        console.log(err.response.data.error);
+      });
   }
 
   return (
@@ -71,7 +82,7 @@ export default function Register() {
           >
             Enter Your Name
           </label>
-          {formState.errors.name ? (
+          {formState.errors.name && formState.touchedFields.name ? (
             <p className='text-red-500 font-semibold text-center my-2'>
               {formState.errors.name.message}
             </p>
@@ -93,7 +104,7 @@ export default function Register() {
           >
             Enter Your E-mail
           </label>
-          {formState.errors.email ? (
+          {formState.errors.email && formState.touchedFields.email ? (
             <p className='text-red-500 font-semibold text-center my-2'>
               {formState.errors.email.message}
             </p>
@@ -115,7 +126,7 @@ export default function Register() {
           >
             Enter Your Password
           </label>
-          {formState.errors.password ? (
+          {formState.errors.password && formState.touchedFields.password ? (
             <p className='text-red-500 font-semibold text-center my-2'>
               {formState.errors.password.message}
             </p>
@@ -137,7 +148,7 @@ export default function Register() {
           >
             Enter Your rePassword
           </label>
-          {formState.errors.rePassword ? (
+          {formState.errors.rePassword && formState.touchedFields.rePassword ? (
             <p className='text-red-500 font-semibold text-center my-2'>
               {formState.errors.rePassword.message}
             </p>
@@ -159,7 +170,8 @@ export default function Register() {
           >
             Enter Your Birthday
           </label>
-          {formState.errors.dateOfBirth ? (
+          {formState.errors.dateOfBirth &&
+          formState.touchedFields.dateOfBirth ? (
             <p className='text-red-500 font-semibold text-center my-2'>
               {formState.errors.dateOfBirth.message}
             </p>
