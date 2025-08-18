@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "./Register.module.css";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -6,9 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 export default function Register() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [apiError, setapiError] = useState("");
+  const [isLoading, setisLoading] = useState(false);
   const schema = z
     .object({
       name: z.string().min(1, "Name is Required").max(10, "Max char is 10"),
@@ -52,13 +53,18 @@ export default function Register() {
   let { register, handleSubmit, formState } = form;
 
   function handleRegister(values) {
+    setisLoading(true);
     axios
       .post("https://linked-posts.routemisr.com/users/signup", values)
       .then((res) => {
-        navigate("/login")
+        if (res.data.message === "success") {
+          navigate("/login");
+          setisLoading(false);
+        }
       })
       .catch((err) => {
-        console.log(err.response.data.error);
+        setapiError(err.response.data.error);
+        setisLoading(false);
       });
   }
 
@@ -68,6 +74,11 @@ export default function Register() {
         onSubmit={handleSubmit(handleRegister)}
         className='max-w-md my-12 mx-auto'
       >
+        {apiError && (
+          <h1 className=' text-center bg-red-500 text-white my-2 p-2 font-bold rounded-2xl'>
+            {apiError}
+          </h1>
+        )}
         <div className='relative z-0 w-full mb-5 group'>
           <input
             type='text'
@@ -221,8 +232,13 @@ export default function Register() {
         <button
           type='submit'
           className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+          disabled={isLoading}
         >
-          Submit
+          {isLoading ? (
+            <i className='fas fa-spinner fa-spin to-white'></i>
+          ) : (
+            "Submit"
+          )}
         </button>
       </form>
     </>
