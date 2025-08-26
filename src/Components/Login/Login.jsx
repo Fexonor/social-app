@@ -5,11 +5,14 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../../context/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const [apiError, setapiError] = useState("");
   const [isLoading, setisLoading] = useState(false);
+  let { userLogin, setuserLogin } = useContext(UserContext);
   const schema = z.object({
     email: z.email("Invaild email"),
     password: z
@@ -38,6 +41,9 @@ export default function Login() {
         if (res.data.message === "success") {
           navigate("/");
           setisLoading(false);
+          console.log(res);
+          localStorage.setItem("userItem", res.data.token);
+          setuserLogin(res.data.token);
         }
       })
       .catch((err) => {

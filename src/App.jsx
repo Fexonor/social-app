@@ -9,6 +9,7 @@ import Home from "./Components/Home/Home";
 import Profile from "./Components/Profile/Profile";
 import Register from "./Components/Register/Register";
 import Notfound from "./Components/Notfound/Notfound";
+import UserContextProvider from "./context/UserContext";
 
 const x = createBrowserRouter([
   {
@@ -29,7 +30,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={x}></RouterProvider>
+      <UserContextProvider>
+        <RouterProvider router={x}></RouterProvider>
+      </UserContextProvider>
     </>
   );
 }
