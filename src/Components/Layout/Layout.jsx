@@ -1,5 +1,5 @@
 import React from "react";
-import style from "./Layout.module.css";
+// import style from "./Layout.module.css";
 import Navbar from "./../Navbar/Navbar";
 import Footer from "./../Footer/Footer";
 import { Outlet } from "react-router-dom";
@@ -9,7 +9,7 @@ export default function Layout() {
     <>
       <Navbar />
 
-      <div className='container mx-auto'>
+      <div className="container my-12 mx-auto">
         <Outlet />
       </div>
 

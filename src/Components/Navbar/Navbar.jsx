@@ -1,11 +1,19 @@
 import React, { useContext } from "react";
-import style from "./Navbar.module.css";
-import { Link } from "react-router-dom";
-import Profile from "./../Profile/Profile";
-import { UserContext } from "../../context/UserContext";
+import { Link, useNavigate } from "react-router-dom";
+import { CounterContext } from "../../Context/CounterContext";
+import { UserContext } from "../../Context/UserContext";
+// import style from "./Navbar.module.css";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  let { counter } = useContext(CounterContext);
   let { userLogin, setuserLogin } = useContext(UserContext);
+
+  function handleSignOut() {
+    localStorage.removeItem("userToken");
+    setuserLogin(null);
+    navigate("/login");
+  }
 
   return (
     <>
@@ -22,7 +30,6 @@ export default function Navbar() {
           <div className='flex gap-4 items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse'>
             {userLogin !== null ? (
               <>
-                {" "}
                 <button
                   type='button'
                   className='flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600'
@@ -60,23 +67,23 @@ export default function Navbar() {
                       </Link>
                     </li>
                     <li>
-                      <Link
-                        to='/login'
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white'
+                      <span
+                        onClick={handleSignOut}
+                        className='block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white'
                       >
                         Sign out
-                      </Link>
+                      </span>
                     </li>
                   </ul>
                 </div>
               </>
             ) : (
-              <ul className='flex gap-4 text-white'>
+              <ul className='text-white flex gap-4'>
                 <li>
-                  <Link to='login'>Login</Link>
+                  <Link to='/register'>Register</Link>
                 </li>
                 <li>
-                  <Link to='register'>Register</Link>
+                  <Link to='/login'>Login</Link>
                 </li>
               </ul>
             )}
